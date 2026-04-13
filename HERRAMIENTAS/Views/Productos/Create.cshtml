@@ -1,0 +1,30 @@
+﻿@model HERRAMIENTAS.Models.Producto
+
+<form asp-action="Create">
+    @Html.AntiForgeryToken()
+
+    <div>
+        <label>Nombre</label>
+        <input asp-for="Nombre" class="form-control" />
+    </div>
+
+    <div>
+        <label>Precio</label>
+        <input asp-for="Precio" class="form-control" />
+    </div>
+
+    <div>
+        <label>Cantidad</label>
+        <input asp-for="Cantidad" class="form-control" />
+    </div>
+
+    <div>
+        <label>Categoría</label>
+        <select asp-for="CategoriaId"
+                asp-items="@(ViewBag.Categorias ?? new SelectList(Enumerable.Empty<SelectListItem>()))"
+                class="form-control">
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+</form>

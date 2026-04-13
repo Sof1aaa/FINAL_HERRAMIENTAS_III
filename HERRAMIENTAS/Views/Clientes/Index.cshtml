@@ -1,0 +1,32 @@
+﻿@model IEnumerable<HERRAMIENTAS.Models.Cliente>
+
+<h2>Clientes</h2>
+
+<a asp-action="Create" class="btn btn-primary">Crear Cliente</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Documento</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Nombre</td>
+                <td>@item.Documento</td>
+                <td>@item.Correo</td>
+                <td>@item.Telefono</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

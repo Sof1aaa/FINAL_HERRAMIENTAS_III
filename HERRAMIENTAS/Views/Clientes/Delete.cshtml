@@ -1,0 +1,12 @@
+﻿@model HERRAMIENTAS.Models.Cliente
+
+<h2>Eliminar Cliente</h2>
+
+<p>¿Seguro que quieres eliminar este cliente?</p>
+
+<strong>@Model.Nombre</strong>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button class="btn btn-danger">Eliminar</button>
+</form>

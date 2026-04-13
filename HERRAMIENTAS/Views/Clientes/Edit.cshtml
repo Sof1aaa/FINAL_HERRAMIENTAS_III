@@ -1,0 +1,31 @@
+﻿@model HERRAMIENTAS.Models.Cliente
+
+<h2>Editar Cliente</h2>
+
+<form asp-action="Edit">
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" asp-for="Id" />
+
+    <div>
+        <label>Nombre</label>
+        <input asp-for="Nombre" class="form-control" />
+    </div>
+
+    <div>
+        <label>Documento</label>
+        <input asp-for="Documento" class="form-control" />
+    </div>
+
+    <div>
+        <label>Correo</label>
+        <input asp-for="Correo" class="form-control" />
+    </div>
+
+    <div>
+        <label>Teléfono</label>
+        <input asp-for="Telefono" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+</form>

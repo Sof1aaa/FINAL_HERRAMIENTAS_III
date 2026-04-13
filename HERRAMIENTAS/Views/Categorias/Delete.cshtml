@@ -1,0 +1,14 @@
+﻿@model HERRAMIENTAS.Models.Categoria
+
+<h2>Eliminar Categoría</h2>
+
+<p>¿Seguro que quieres eliminar esta categoría?</p>
+
+<div>
+    <strong>@Model.Nombre</strong>
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+</form>

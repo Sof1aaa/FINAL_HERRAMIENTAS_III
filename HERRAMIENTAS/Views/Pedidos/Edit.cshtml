@@ -1,0 +1,75 @@
+﻿@model Pedido
+
+<div class="card shadow-lg p-4">
+
+    <h2 class="mb-4">Editar Pedido</h2>
+
+    <form asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" asp-for="Id" />
+
+        <!-- Cliente -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Cliente</label>
+            <select asp-for="ClienteId"
+                    asp-items="(IEnumerable<SelectListItem>)ViewBag.Clientes"
+                    class="form-select">
+            </select>
+        </div>
+
+        <!-- Productos -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Productos</label>
+
+            <div class="list-group">
+
+                @foreach (var item in (List<Producto>)ViewBag.Productos)
+                {
+                    var detalle = Model.PedidoProductos
+                        .FirstOrDefault(dp => dp.ProductoId == item.Id);
+
+                    bool seleccionado = detalle != null;
+                    int cantidad = detalle?.Cantidad ?? 1;
+
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <input type="checkbox"
+                                   name="productosSeleccionados"
+                                   value="@item.Id"
+                                   class="form-check-input me-2"
+                            @(seleccionado ? "checked" : "") />
+
+                            <strong>@item.Nombre</strong>
+                            <span class="text-muted">($@item.Precio)</span>
+                        </div>
+
+                        <input type="number"
+                               name="cantidades[@item.Id]"
+                               value="@cantidad"
+                               class="form-control"
+                               style="width: 100px;"
+                               min="1" />
+
+                    </div>
+                }
+
+            </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-between mt-4">
+
+            <a asp-action="Index" class="btn btn-secondary">
+                Volver
+            </a>
+
+            <button type="submit" class="btn btn-success px-4">
+                Actualizar Pedido
+            </button>
+
+        </div>
+
+    </form>
+</div>

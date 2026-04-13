@@ -1,0 +1,35 @@
+﻿@model HERRAMIENTAS.Models.Pedido
+
+<h2>Detalle del Pedido</h2>
+
+<p><strong>Número:</strong> @Model.NumeroPedido</p>
+<p><strong>Cliente:</strong> @Model.Cliente?.Nombre</p>
+<p><strong>Fecha:</strong> @Model.Fecha</p>
+
+<h4>Productos</h4>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.PedidoProductos)
+        {
+            <tr>
+                <td>@item.Producto?.Nombre</td>
+                <td>$@item.Producto?.Precio</td>
+                <td>@item.Cantidad</td>
+                <td>$@(item.Cantidad* item.Producto.Precio)</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Total: $@Model.Total</h3>
+
+<a asp-action="Index" class="btn btn-secondary">Volver</a>

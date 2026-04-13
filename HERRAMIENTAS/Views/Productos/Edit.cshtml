@@ -1,0 +1,29 @@
+﻿@model HERRAMIENTAS.Models.Producto
+
+<h2>Editar Producto</h2>
+
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" />
+
+    <div>
+        <label>Nombre</label>
+        <input asp-for="Nombre" class="form-control" />
+    </div>
+
+    <div>
+        <label>Precio</label>
+        <input asp-for="Precio" class="form-control" />
+    </div>
+
+    <div>
+        <label>Cantidad</label>
+        <input asp-for="Cantidad" class="form-control" />
+    </div>
+
+    <div>
+        <label>Categoría</label>
+        <select asp-for="CategoriaId" asp-items="ViewBag.Categorias" class="form-control"></select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Actualizar</button>
+</form>
