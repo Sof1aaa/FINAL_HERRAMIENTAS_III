@@ -2,43 +2,73 @@
 
 <div class="container d-flex justify-content-center mt-5">
 
-    <div class="card p-4 shadow" style="width: 600px;">
+    <div class="card p-4 shadow" style="width: 650px; border-radius:15px;">
 
-        <h3 class="mb-4">Crear Pedido</h3>
+        <h3 class="mb-4 text-primary">🛒 Crear Pedido</h3>
 
-        <form asp-action="Create">
+        <form asp-action="Create" method="post">
             @Html.AntiForgeryToken()
 
+            <!-- Cliente -->
             <div class="mb-4">
-                <label class="form-label">Cliente</label>
-                <select name="ClienteId" asp-items="ViewBag.Clientes" class="form-control"></select>
+                <label class="form-label fw-bold">Cliente</label>
+                <select name="ClienteId" asp-items="ViewBag.Clientes" class="form-select"></select>
             </div>
 
+            <!-- Productos -->
             <h5 class="mb-3">Productos</h5>
 
             <div class="list-group mb-4">
 
-                @foreach (var producto in ViewBag.Productos)
+                @foreach (var producto in (List<Producto>)ViewBag.Productos)
                 {
                     <div class="list-group-item d-flex justify-content-between align-items-center">
 
+                        <!-- Info producto -->
                         <div>
-                            <input type="checkbox" name="ProductoIds" value="@producto.Id" class="form-check-input me-2" />
-                            <span>@producto.Nombre</span>
+                            <input type="checkbox"
+                                   name="ProductoIds"
+                                   value="@producto.Id"
+                                   class="form-check-input me-2"
+                            @(producto.Stock <= 0 ? "disabled" : "") />
+
+                            <span class="fw-semibold">@producto.Nombre</span>
                             <small class="text-muted">($@producto.Precio.ToString("0.##"))</small>
+
+                            @if (producto.Stock > 0)
+                            {
+                                <span class="badge bg-success ms-2">
+                                    Stock: @producto.Stock
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger ms-2">
+                                    Sin stock
+                                </span>
+                            }
                         </div>
 
+                        <!-- Cantidad -->
                         <input type="number"
                                name="Cantidades"
-                               value="0"
-                               min="0"
+                               value="1"
+                               min="1"
+                               max="@producto.Stock"
                                class="form-control"
-                               style="width: 80px;" />
+                               style="width: 90px;"
+                        @(producto.Stock <= 0 ? "disabled" : "") />
                     </div>
                 }
 
             </div>
 
+            <!-- TOTAL (visual) -->
+            <div class="mb-3 text-end">
+                <h5>Total: <span id="total">$0</span></h5>
+            </div>
+
+            <!-- Botón -->
             <button type="submit" class="btn btn-dark w-100 mt-3">
                 Guardar Pedido
             </button>
@@ -48,3 +78,26 @@
     </div>
 
 </div>
+
+<script>
+    const checkboxes = document.querySelectorAll('input[name="ProductoIds"]');
+    const cantidades = document.querySelectorAll('input[name="Cantidades"]');
+
+    function calcularTotal() {
+        let total = 0;
+
+        checkboxes.forEach((chk, index) => {
+            if (chk.checked) {
+                const precio = parseFloat(chk.parentElement.querySelector("small").innerText.replace(/[^\d.]/g, ''));
+                const cantidad = parseInt(cantidades[index].value) || 0;
+
+                total += precio * cantidad;
+            }
+        });
+
+        document.getElementById("total").innerText = "$" + total.toFixed(2);
+    }
+
+    checkboxes.forEach(c => c.addEventListener("change", calcularTotal));
+    cantidades.forEach(c => c.addEventListener("input", calcularTotal));
+</script>

@@ -25,12 +25,10 @@ namespace HERRAMIENTAS.Controllers
         }
 
         // 🔹 CREAR (GET)
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var categorias = _context.Categorias.ToList();
-
+            var categorias = await _context.Categorias.ToListAsync();
             ViewBag.Categorias = new SelectList(categorias, "Id", "Nombre");
-
             return View();
         }
 

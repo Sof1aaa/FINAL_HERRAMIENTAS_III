@@ -2,7 +2,7 @@
 
 <div class="card shadow-lg p-4">
 
-    <h2 class="mb-4">Editar Pedido</h2>
+    <h2 class="mb-4 text-primary">✏️ Editar Pedido</h2>
 
     <form asp-action="Edit" method="post">
         @Html.AntiForgeryToken()
@@ -36,26 +36,46 @@
 
                         <div>
                             <input type="checkbox"
-                                   name="productosSeleccionados"
+                                   name="ProductoIds"
                                    value="@item.Id"
                                    class="form-check-input me-2"
-                            @(seleccionado ? "checked" : "") />
+                            @(seleccionado ? "checked" : "")
+                            @(item.Stock <= 0 && !seleccionado ? "disabled" : "") />
 
                             <strong>@item.Nombre</strong>
                             <span class="text-muted">($@item.Precio)</span>
+
+                            @if (item.Stock > 0)
+                            {
+                                <span class="badge bg-success ms-2">
+                                    Stock: @item.Stock
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger ms-2">
+                                    Sin stock
+                                </span>
+                            }
                         </div>
 
                         <input type="number"
-                               name="cantidades[@item.Id]"
+                               name="Cantidades"
                                value="@cantidad"
                                class="form-control"
                                style="width: 100px;"
-                               min="1" />
-
+                               min="1"
+                               max="@item.Stock"
+                        @(item.Stock <= 0 && !seleccionado ? "disabled" : "") />
                     </div>
                 }
 
             </div>
+        </div>
+
+        <!-- TOTAL -->
+        <div class="text-end mb-3">
+            <h5>Total: <span id="total">$0</span></h5>
         </div>
 
         <!-- Botones -->
@@ -73,3 +93,31 @@
 
     </form>
 </div>
+
+<script>
+    const checkboxes = document.querySelectorAll('input[name="ProductoIds"]');
+    const cantidades = document.querySelectorAll('input[name="Cantidades"]');
+
+    function calcularTotal() {
+        let total = 0;
+
+        checkboxes.forEach((chk, index) => {
+            if (chk.checked) {
+                const precio = parseFloat(
+                    chk.parentElement.querySelector("span.text-muted")
+                        .innerText.replace(/[^\d.]/g, '')
+                );
+
+                const cantidad = parseInt(cantidades[index].value) || 0;
+                total += precio * cantidad;
+            }
+        });
+
+        document.getElementById("total").innerText = "$" + total.toFixed(2);
+    }
+
+    checkboxes.forEach(c => c.addEventListener("change", calcularTotal));
+    cantidades.forEach(c => c.addEventListener("input", calcularTotal));
+
+    calcularTotal();
+</script>

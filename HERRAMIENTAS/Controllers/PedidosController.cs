@@ -41,10 +41,12 @@ namespace HERRAMIENTAS.Controllers
         }
 
         // 🟢 CREAR (GET)
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             ViewBag.Clientes = new SelectList(_context.Clientes, "Id", "Nombre");
-            ViewBag.Productos = _context.Productos.ToList();
+            ViewBag.Productos = await _context.Productos
+                .AsNoTracking()
+                .ToListAsync(); 
             return View();
         }
 
@@ -76,6 +78,14 @@ namespace HERRAMIENTAS.Controllers
 
                 if (producto != null && Cantidades[i] > 0)
                 {
+                    if (producto.Stock < Cantidades[i])
+                    {
+                        ModelState.AddModelError("", $"No hay suficiente stock para {producto.Nombre}");
+                        return View();
+                    }
+
+                    producto.Stock -= Cantidades[i]; // 🔥 RESTAR STOCK
+
                     pedido.PedidoProductos.Add(new PedidoProducto
                     {
                         ProductoId = producto.Id,
@@ -118,7 +128,17 @@ namespace HERRAMIENTAS.Controllers
 
             if (pedido == null) return NotFound();
 
-            // 🔥 Eliminar productos anteriores
+            // 🔁 1. DEVOLVER STOCK ANTERIOR
+            foreach (var pp in pedido.PedidoProductos)
+            {
+                var producto = await _context.Productos.FindAsync(pp.ProductoId);
+                if (producto != null)
+                {
+                    producto.Stock += pp.Cantidad;
+                }
+            }
+
+            // ❌ 2. ELIMINAR DETALLES
             _context.PedidoProductos.RemoveRange(pedido.PedidoProductos);
 
             pedido.ClienteId = ClienteId;
@@ -126,6 +146,7 @@ namespace HERRAMIENTAS.Controllers
 
             decimal total = 0;
 
+            // 🔥 3. AGREGAR NUEVOS Y RESTAR STOCK
             foreach (var productoId in productosSeleccionados)
             {
                 var producto = await _context.Productos.FindAsync(productoId);
@@ -133,6 +154,15 @@ namespace HERRAMIENTAS.Controllers
                 if (producto != null)
                 {
                     int cantidad = cantidades.ContainsKey(productoId) ? cantidades[productoId] : 1;
+
+                    // 🚨 VALIDAR STOCK
+                    if (producto.Stock < cantidad)
+                    {
+                        ModelState.AddModelError("", $"No hay suficiente stock para {producto.Nombre}");
+                        return View(pedido);
+                    }
+
+                    producto.Stock -= cantidad; // 🔥 RESTAR STOCK NUEVO
 
                     pedido.PedidoProductos.Add(new PedidoProducto
                     {
@@ -144,12 +174,12 @@ namespace HERRAMIENTAS.Controllers
                 }
             }
 
+            // 💰 TOTAL
             pedido.Total = total;
 
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
-
     }
 }

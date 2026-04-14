@@ -10,7 +10,7 @@
             <th>Nombre</th>
             <th>Precio</th>
             <th>Cantidad</th>
-            <th>Categoría</th>
+            <th>Stock</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -20,7 +20,7 @@
             <tr>
                 <td>@item.Nombre</td>
                 <td>@item.Precio</td>
-                <td>@item.Cantidad</td>
+                <td>@item.Stock</td>
                 <td>@item.Categoria?.Nombre</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
